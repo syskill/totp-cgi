@@ -1,3 +1,5 @@
-Crypto
+MySQL-python
 passlib
+pycrypto
 pyotp
+python-ldap
