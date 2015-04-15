@@ -80,7 +80,7 @@ class GAStateBackend(totpcgi.backends.GAStateBackend):
         self.locks = {}
 
     def get_user_state(self, user):
-
+        self.conn.ping(True)
         userid = get_user_id(self.conn, user)
 
         state = totpcgi.GAUserState()
@@ -124,6 +124,7 @@ class GAStateBackend(totpcgi.backends.GAStateBackend):
         return state
 
     def update_user_state(self, user, state):
+        self.conn.ping(True)
         logger.debug('Writing new state for user %s' % user)
 
         if user not in self.locks.keys():
@@ -165,6 +166,7 @@ class GAStateBackend(totpcgi.backends.GAStateBackend):
         del self.locks[user]
 
     def delete_user_state(self, user):
+        self.conn.ping(True)
         cur = self.conn.cursor()
         logger.debug('Deleting state records for user=%s' % user)
 
@@ -211,6 +213,7 @@ class GASecretBackend(totpcgi.backends.GASecretBackend):
             logger.info('Counters table not found, assuming pre-0.6 database schema (no HOTP support)')
 
     def get_user_secret(self, user, pincode=None):
+        self.conn.ping(True)
         cur = self.conn.cursor()
 
         logger.debug('Querying DB for user %s' % user)
@@ -273,6 +276,7 @@ class GASecretBackend(totpcgi.backends.GASecretBackend):
         return gaus
 
     def save_user_secret(self, user, gaus, pincode=None):
+        self.conn.ping(True)
         cur = self.conn.cursor()
 
         self._delete_user_secret(user)
@@ -311,6 +315,7 @@ class GASecretBackend(totpcgi.backends.GASecretBackend):
                   WHERE userid=%s''', (userid,))
 
     def delete_user_secret(self, user):
+        self.conn.ping(True)
         self._delete_user_secret(user)
         self.conn.commit()
 
@@ -324,6 +329,7 @@ class GAPincodeBackend(totpcgi.backends.GAPincodeBackend):
         self.conn = db_connect(connect_host, connect_user, connect_password, connect_db)
         
     def verify_user_pincode(self, user, pincode):
+        self.conn.ping(True)
         cur = self.conn.cursor()
 
         logger.debug('Querying DB for user %s' % user)
@@ -352,6 +358,7 @@ class GAPincodeBackend(totpcgi.backends.GAPincodeBackend):
                   WHERE userid=%s''', (userid,))
         
     def save_user_hashcode(self, user, hashcode, makedb=False):
+        self.conn.ping(True)
         self._delete_user_hashcode(user)
 
         userid = get_user_id(self.conn, user)
@@ -366,6 +373,7 @@ class GAPincodeBackend(totpcgi.backends.GAPincodeBackend):
         self.conn.commit()
 
     def delete_user_hashcode(self, user):
+        self.conn.ping(True)
         self._delete_user_hashcode(user)
         self.conn.commit()
 
